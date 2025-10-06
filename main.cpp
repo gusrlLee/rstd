@@ -1,7 +1,13 @@
 #include <iostream>
-#include "engine.h"
+#include "engine.hpp"
 
 int main() {
-    return 0;
+    rstd::engine engine;
 
+    engine.init();
+    engine.run();
+
+    engine.clean();
+
+    return 0;
 }

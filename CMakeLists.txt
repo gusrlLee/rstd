@@ -6,10 +6,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(3rdparty)
 find_package(Vulkan REQUIRED)
 
+# set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+# set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+
+find_program(GLSL_VALIDATOR glslangValidator HINTS /usr/bin /usr/local/bin $ENV{VULKAN_SDK}/Bin/ $ENV{VULKAN_SDK}/Bin32/)
+
+
 add_executable(${PROJECT_NAME} 
+	types.hpp
+	engine.hpp
+	initializers.hpp
+
 	main.cpp
-	engine.h
-	types.h
+	engine.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/3rdparty)
