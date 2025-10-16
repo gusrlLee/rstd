@@ -1,13 +1,7 @@
 #include <iostream>
-#include "engine.hpp"
 
-int main() {
-    rstd::engine engine;
-
-    engine.init();
-    engine.run();
-
-    engine.clean();
-
+int main()
+{
+    std::cout << "Hello world!" << std::endl;
     return 0;
 }
