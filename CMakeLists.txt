@@ -7,7 +7,14 @@ set(CMAKE_CUDA_STANDARD 20)
 add_subdirectory(ext)
 
 add_executable(${PROJECT_NAME} 
+camera.h
 	main.cu
+	hitable.h
+	hitable_list.h
+	material.h
+	ray.h
+	sphere.h
+	vec3.h
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/ext)
