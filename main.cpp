@@ -17,22 +17,26 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+// window size 
 constexpr uint32_t WIDTH = 800;
 constexpr uint32_t HEIGHT = 600;
 constexpr int      MAX_FRAMES_IN_FLIGHT = 2;
 
+// for debugging 
 const std::vector<char const*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation" };
 
+// we use validation layers if we use debug mode 
 #ifdef NDEBUG
 constexpr bool enableValidationLayers = false;
 #else
 constexpr bool enableValidationLayers = true;
 #endif
 
-class HelloTriangleApplication
+class Application
 {
 public:
+	// this entry loop 
 	void run()
 	{
 		initWindow();
@@ -43,6 +47,7 @@ public:
 
 private:
 	GLFWwindow* window = nullptr;
+
 	vk::raii::Context                context;
 	vk::raii::Instance               instance = nullptr;
 	vk::raii::DebugUtilsMessengerEXT debugMessenger = nullptr;
@@ -84,6 +89,7 @@ private:
 		window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 	}
 
+	// api initialization 
 	void initVulkan()
 	{
 		createInstance();
@@ -107,19 +113,18 @@ private:
 			drawFrame();
 		}
 
-		device.waitIdle();
+		device.waitIdle(); // for quit
 	}
 
 	void cleanup()
 	{
 		glfwDestroyWindow(window);
-
 		glfwTerminate();
 	}
 
 	void createInstance()
 	{
-		constexpr vk::ApplicationInfo appInfo{ .pApplicationName = "Hello Triangle",
+		constexpr vk::ApplicationInfo appInfo{ .pApplicationName = "Application",
 											  .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
 											  .pEngineName = "No Engine",
 											  .engineVersion = VK_MAKE_VERSION(1, 0, 0),
@@ -193,7 +198,7 @@ private:
 	void pickPhysicalDevice()
 	{
 		std::vector<vk::raii::PhysicalDevice> devices = instance.enumeratePhysicalDevices();
-		const auto                            devIter = std::ranges::find_if(
+		const auto devIter = std::ranges::find_if(
 			devices,
 			[&](auto const& device) {
 				// Check if the device supports the Vulkan 1.3 API version
@@ -224,6 +229,7 @@ private:
 
 				return supportsVulkan1_3 && supportsGraphics && supportsAllRequiredExtensions && supportsRequiredFeatures;
 			});
+
 		if (devIter != devices.end())
 		{
 			physicalDevice = *devIter;
@@ -417,6 +423,7 @@ private:
 			vk::PipelineStageFlagBits2::eColorAttachmentOutput,        // srcStage
 			vk::PipelineStageFlagBits2::eBottomOfPipe                  // dstStage
 		);
+
 		commandBuffer.end();
 	}
 
@@ -472,8 +479,7 @@ private:
 	{
 		// Note: inFlightFences, presentCompleteSemaphores, and commandBuffers are indexed by frameIndex,
 		//       while renderFinishedSemaphores is indexed by imageIndex
-		while (vk::Result::eTimeout == device.waitForFences(*inFlightFences[frameIndex], vk::True, UINT64_MAX))
-			;
+		while (vk::Result::eTimeout == device.waitForFences(*inFlightFences[frameIndex], vk::True, UINT64_MAX));
 		device.resetFences(*inFlightFences[frameIndex]);
 
 		auto [result, imageIndex] = swapChain.acquireNextImage(UINT64_MAX, *presentCompleteSemaphores[frameIndex], nullptr);
@@ -497,6 +503,7 @@ private:
 												.pSwapchains = &*swapChain,
 												.pImageIndices = &imageIndex };
 		result = queue.presentKHR(presentInfoKHR);
+
 		switch (result)
 		{
 		case vk::Result::eSuccess:
@@ -507,6 +514,7 @@ private:
 		default:
 			break;        // an unexpected result is returned!
 		}
+
 		frameIndex = (frameIndex + 1) % MAX_FRAMES_IN_FLIGHT;
 	}
 
@@ -603,7 +611,7 @@ int main()
 {
 	try
 	{
-		HelloTriangleApplication app;
+		Application app;
 		app.run();
 	}
 	catch (const std::exception& e)
